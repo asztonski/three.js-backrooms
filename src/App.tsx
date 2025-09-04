@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef } from 'react';
+import * as THREE from 'three';
 
 export default function App() {
   type CubeProps = {
@@ -9,11 +10,13 @@ export default function App() {
   };
 
   const Cube = ({ position = [0, 0, 0], color, size = [1, 1, 1] }: CubeProps) => {
-    const ref = useRef();
+    const ref = useRef<THREE.Mesh>(null);
 
     useFrame((state, delta) => {
-      ref.current.rotation.x += delta;
-      ref.current.rotation.y += delta;
+      if (ref.current) {
+        ref.current.rotation.x += delta;
+        ref.current.rotation.y += delta * 2;
+      }
     });
 
     return (
