@@ -15,7 +15,7 @@ body,
 }
 
 body {
-  @apply bg-white font-sans text-gray-800 antialiased;
+  @apply bg-white font-sans text-gray-900 antialiased;
 }
 
 /* @media (prefers-color-scheme: dark) {
