@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useRef, useState, Suspense, useEffect } from 'react';
 import { useTexture, PositionalAudio } from '@react-three/drei';
 import { MeshWobbleMaterial, OrbitControls, useHelper } from '@react-three/drei';
@@ -39,6 +39,17 @@ export default function App() {
   };
 
   const Scene = () => {
+    const camera = useThree((state) => state.camera);
+    const ROOM_HALF = 10; // bo box ma 20
+    const RADIUS = 0.75; // „promień gracza”
+
+    useFrame(() => {
+      const p = camera.position;
+      p.x = THREE.MathUtils.clamp(p.x, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
+      p.y = THREE.MathUtils.clamp(p.y, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
+      p.z = THREE.MathUtils.clamp(p.z, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
+    });
+
     const directionalLightRef = useRef<THREE.DirectionalLight>(
       null!,
     ) as React.RefObject<THREE.DirectionalLight>;
