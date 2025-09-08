@@ -1,14 +1,14 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useRef, useState, Suspense, useEffect } from 'react';
-import { useTexture, PositionalAudio } from '@react-three/drei';
-import { MeshWobbleMaterial, OrbitControls, useHelper } from '@react-three/drei';
+import { useRef, Suspense, useEffect } from 'react';
+import { useTexture, PositionalAudio, PointerLockControls } from '@react-three/drei';
+import { useHelper } from '@react-three/drei';
 import * as THREE from 'three';
 
 export default function App() {
   const InteriorBox = () => {
     const { wall, floor, ceiling } = useTexture({
       wall: '/textures/wallpaper.jpg',
-      floor: '/textures/floor.webp',
+      floor: '/textures/floor.png',
       ceiling: '/textures/ceiling.png',
     });
 
@@ -23,7 +23,7 @@ export default function App() {
     return (
       <mesh>
         <mesh>
-          <boxGeometry args={[20, 20, 20]} />
+          <boxGeometry args={[40, 20, 20]} />
           {/* +X, -X */}
           <meshStandardMaterial attach="material-0" map={wall} side={THREE.BackSide} />
           <meshStandardMaterial attach="material-1" map={wall} side={THREE.BackSide} />
@@ -38,16 +38,52 @@ export default function App() {
     );
   };
 
-  const controlsRef = useRef<any>(null);
-  const [hoverLook, setHoverLook] = useState(true);
-  const last = useRef<{ x: number; y: number } | null>(null);
+  const plcRef = useRef<any>(null);
 
-  const Scene = () => {
+  const Scene = ({ plcRef }) => {
     const camera = useThree((state) => state.camera);
     const ROOM_HALF = 10; // bo box ma 20
     const RADIUS = 0.75; // „promień gracza”
 
-    useFrame(() => {
+    const keys = useRef({ w: false, a: false, s: false, d: false });
+
+    useEffect(() => {
+      const down = (e: KeyboardEvent) => {
+        const k = e.key.toLowerCase();
+        if (k in keys.current) keys.current[k as 'w' | 'a' | 's' | 'd'] = true;
+      };
+      const up = (e: KeyboardEvent) => {
+        const k = e.key.toLowerCase();
+        if (k in keys.current) keys.current[k as 'w' | 'a' | 's' | 'd'] = false;
+      };
+      window.addEventListener('keydown', down);
+      window.addEventListener('keyup', up);
+      return () => {
+        window.removeEventListener('keydown', down);
+        window.removeEventListener('keyup', up);
+      };
+    }, []);
+
+    useFrame(({ camera }, dt) => {
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      forward.y = 0;
+      forward.normalize();
+
+      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
+
+      const speed = 3; // meters per second
+      const move = new THREE.Vector3();
+      if (keys.current.w) move.add(forward);
+      if (keys.current.s) move.sub(forward);
+      if (keys.current.a) move.add(right);
+      if (keys.current.d) move.sub(right);
+
+      if (move.lengthSq() > 0) {
+        move.normalize().multiplyScalar(speed * dt);
+        camera.position.add(move);
+      }
+
       const p = camera.position;
       p.x = THREE.MathUtils.clamp(p.x, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
       p.y = THREE.MathUtils.clamp(p.y, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
@@ -93,42 +129,14 @@ export default function App() {
         <Suspense fallback={null}>
           <InteriorBox />
         </Suspense>
-        <OrbitControls ref={controlsRef} enableRotate={false} />
+        <PointerLockControls ref={plcRef} />
       </>
     );
   };
 
-  const SPEED = 0.012;
-
-  const onMove = (e: any) => {
-    if (!hoverLook || !controlsRef.current) return;
-    const controls = controlsRef.current;
-    const az = controls.getAzimuthalAngle();
-    const pol = controls.getPolarAngle();
-
-    const nextAz = az - e.movementX * SPEED;
-    const nextPol = THREE.MathUtils.clamp(
-      pol - e.movementY * SPEED,
-      controls.minPolarAngle ?? 0,
-      controls.maxPolarAngle ?? Math.PI,
-    );
-
-    controls.setAzimuthalAngle(nextAz);
-    controls.setPolarAngle(nextPol);
-    controls.update();
-  };
-
-  const onLeave = () => {
-    last.current = null;
-  };
-
-  const onClick = () => {
-    setHoverLook(false);
-  }; // klik = wyłącz
-
   return (
-    <Canvas onPointerMove={onMove} onPointerLeave={onLeave} onClick={onClick}>
-      <Scene />
+    <Canvas onClick={() => plcRef.current?.lock?.()}>
+      <Scene plcRef={plcRef} />
     </Canvas>
   );
 }
