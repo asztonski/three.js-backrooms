@@ -12,8 +12,8 @@ export const InteriorBox = () => {
     t.colorSpace = THREE.SRGBColorSpace;
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
   });
-  wall.repeat.set(2, 2);
-  floor.repeat.set(4, 4); // gęstszy deseń na podłodze
+  wall.repeat.set(10, 10);
+  floor.repeat.set(1, 1); // gęstszy deseń na podłodze
   ceiling.repeat.set(1, 1); // zwykle rzadszy na suficie
 
   return (
