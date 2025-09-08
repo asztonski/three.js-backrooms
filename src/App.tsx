@@ -38,6 +38,10 @@ export default function App() {
     );
   };
 
+  const controlsRef = useRef<any>(null);
+  const [hoverLook, setHoverLook] = useState(true);
+  const last = useRef<{ x: number; y: number } | null>(null);
+
   const Scene = () => {
     const camera = useThree((state) => state.camera);
     const ROOM_HALF = 10; // bo box ma 20
@@ -76,7 +80,7 @@ export default function App() {
 
     return (
       <>
-        <directionalLight position={[0, 0, 2]} ref={directionalLightRef} />
+        {/* <directionalLight position={[0, 0, 2]} ref={directionalLightRef} /> */}
         <ambientLight />
         <PositionalAudio
           ref={audioRef}
@@ -86,17 +90,44 @@ export default function App() {
           distance={4}
           position={[0, 1.6, 0]}
         />
-        {/* <-- JEDYNA ZMIANA: Suspense wokół InteriorBox */}
         <Suspense fallback={null}>
           <InteriorBox />
         </Suspense>
-        <OrbitControls />
+        <OrbitControls ref={controlsRef} enableRotate={false} />
       </>
     );
   };
 
+  const SPEED = 0.012;
+
+  const onMove = (e: any) => {
+    if (!hoverLook || !controlsRef.current) return;
+    const controls = controlsRef.current;
+    const az = controls.getAzimuthalAngle();
+    const pol = controls.getPolarAngle();
+
+    const nextAz = az - e.movementX * SPEED;
+    const nextPol = THREE.MathUtils.clamp(
+      pol - e.movementY * SPEED,
+      controls.minPolarAngle ?? 0,
+      controls.maxPolarAngle ?? Math.PI,
+    );
+
+    controls.setAzimuthalAngle(nextAz);
+    controls.setPolarAngle(nextPol);
+    controls.update();
+  };
+
+  const onLeave = () => {
+    last.current = null;
+  };
+
+  const onClick = () => {
+    setHoverLook(false);
+  }; // klik = wyłącz
+
   return (
-    <Canvas>
+    <Canvas onPointerMove={onMove} onPointerLeave={onLeave} onClick={onClick}>
       <Scene />
     </Canvas>
   );
