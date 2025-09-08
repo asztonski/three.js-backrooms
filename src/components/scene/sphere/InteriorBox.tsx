@@ -18,7 +18,7 @@ export const InteriorBox = ({ size = [40, 20, 20] }: InteriorBoxProps) => {
   });
   wall.repeat.set(20, 20);
   floor.repeat.set(10, 10); // gęstszy deseń na podłodze
-  ceiling.repeat.set(2, 1); // zwykle rzadszy na suficie
+  ceiling.repeat.set(5, 5); // zwykle rzadszy na suficie
 
   return (
     <mesh>

@@ -91,9 +91,9 @@ export default function App() {
     return (
       <>
         <CeilingTroffer />
-        <CeilingLamp size={[5, 5]} position={[0, 9.9, 0]} />
+        <CeilingLamp size={[5, 5]} position={[0, 9.9, 10]} />
         <CeilingLamp size={[5, 5]} position={[-20, 9.9, 0]} />
-        <CeilingLamp size={[5, 5]} position={[20, 9.9, 0]} />
+        <CeilingLamp size={[5, 5]} position={[20, 9.9, -10]} />
         {/* <PositionalAudio
           ref={audioRef}
           url="/audio/ambient.wav"
@@ -103,7 +103,7 @@ export default function App() {
           position={[0, 1.6, 0]}
         /> */}
         <Suspense fallback={null}>
-          <InteriorBox size={[100, 20, 40]} />
+          <InteriorBox size={[100, 20, 80]} />
         </Suspense>
         <PointerLockControls ref={plcRef} />
       </>
