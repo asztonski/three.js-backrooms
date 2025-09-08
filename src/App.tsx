@@ -1,44 +1,28 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, useState } from 'react';
+import { useRef, useState, Suspense } from 'react';
+import { useTexture } from '@react-three/drei';
 import { MeshWobbleMaterial, OrbitControls, useHelper } from '@react-three/drei';
 import * as THREE from 'three';
 
 export default function App() {
-  type CubeProps = {
-    position?: [number, number, number];
-    color: string;
-    secondColor?: string;
-    size: [number, number, number];
-  };
-
-  const Cube = ({ position = [0, 0, 0], color, secondColor, size = [1, 1, 1] }: CubeProps) => {
-    const ref = useRef<THREE.Mesh>(null);
-    const [isHovered, setIsHovered] = useState(false);
-
-    useFrame((state, delta) => {
-      if (ref.current) {
-        const speed = isHovered ? 0 : 1;
-        ref.current.rotation.x += delta * speed;
-        ref.current.rotation.y += delta * speed;
-      }
-    });
+  const InteriorBox = () => {
+    const tex = useTexture('/textures/wallpaper.jpg'); // wrzuć plik do /public/textures/
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(2, 2);
 
     return (
-      <mesh
-        onPointerEnter={(event) => [event.stopPropagation(), setIsHovered(true)]}
-        onPointerLeave={() => setIsHovered(false)}
-        position={position}
-        ref={ref}
-      >
-        <boxGeometry args={size} />
-        <MeshWobbleMaterial
-          color={isHovered ? secondColor : color}
-          speed={1}
-          factor={isHovered ? 1 : 0}
-        />
+      <mesh>
+        <boxGeometry args={[20, 20, 20]} />
+        <meshStandardMaterial map={tex} side={THREE.BackSide} />
       </mesh>
     );
   };
+
+  // + w Scene (w return)
+  <Suspense fallback={null}>
+    <InteriorBox />
+  </Suspense>;
 
   const Scene = () => {
     const directionalLightRef = useRef<THREE.DirectionalLight>(
@@ -51,7 +35,7 @@ export default function App() {
       <>
         <directionalLight position={[0, 0, 2]} ref={directionalLightRef} />
         <ambientLight />
-        <Cube size={[1, 1, 1]} position={[0, 0, 0]} color="purple" secondColor="violet" />
+        <InteriorBox />
         <OrbitControls />
       </>
     );
