@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, useState, Suspense } from 'react';
-import { useTexture } from '@react-three/drei';
+import { useRef, useState, Suspense, useEffect } from 'react';
+import { useTexture, PositionalAudio } from '@react-three/drei';
 import { MeshWobbleMaterial, OrbitControls, useHelper } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -38,11 +38,6 @@ export default function App() {
     );
   };
 
-  // + w Scene (w return)
-  <Suspense fallback={null}>
-    <InteriorBox />
-  </Suspense>;
-
   const Scene = () => {
     const directionalLightRef = useRef<THREE.DirectionalLight>(
       null!,
@@ -50,11 +45,40 @@ export default function App() {
 
     useHelper(directionalLightRef, THREE.DirectionalLightHelper, 1, 'red');
 
+    const audioRef = useRef<THREE.PositionalAudio>(null);
+
+    useEffect(() => {
+      const unlock = () => {
+        const ctx = THREE.AudioContext.getContext();
+        if (ctx.state === 'suspended') ctx.resume();
+        audioRef.current?.play?.();
+        window.removeEventListener('pointerdown', unlock);
+        window.removeEventListener('touchstart', unlock);
+        window.removeEventListener('keydown', unlock);
+        window.removeEventListener('wheel', unlock);
+      };
+      window.addEventListener('pointerdown', unlock, { once: true });
+      window.addEventListener('touchstart', unlock, { once: true, passive: true });
+      window.addEventListener('keydown', unlock, { once: true });
+      window.addEventListener('wheel', unlock, { once: true, passive: true });
+    }, []);
+
     return (
       <>
         <directionalLight position={[0, 0, 2]} ref={directionalLightRef} />
         <ambientLight />
-        <InteriorBox />
+        <PositionalAudio
+          ref={audioRef}
+          url="/audio/ambient.wav"
+          autoplay
+          loop
+          distance={4}
+          position={[0, 1.6, 0]}
+        />
+        {/* <-- JEDYNA ZMIANA: Suspense wokół InteriorBox */}
+        <Suspense fallback={null}>
+          <InteriorBox />
+        </Suspense>
         <OrbitControls />
       </>
     );
