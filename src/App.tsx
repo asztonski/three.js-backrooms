@@ -6,15 +6,34 @@ import * as THREE from 'three';
 
 export default function App() {
   const InteriorBox = () => {
-    const tex = useTexture('/textures/wallpaper.jpg'); // wrzuć plik do /public/textures/
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(2, 2);
+    const { wall, floor, ceiling } = useTexture({
+      wall: '/textures/wallpaper.jpg',
+      floor: '/textures/floor.webp',
+      ceiling: '/textures/ceiling.png',
+    });
+
+    [wall, floor, ceiling].forEach((t) => {
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    });
+    wall.repeat.set(2, 2);
+    floor.repeat.set(4, 4); // gęstszy deseń na podłodze
+    ceiling.repeat.set(1, 1); // zwykle rzadszy na suficie
 
     return (
       <mesh>
-        <boxGeometry args={[20, 20, 20]} />
-        <meshStandardMaterial map={tex} side={THREE.BackSide} />
+        <mesh>
+          <boxGeometry args={[20, 20, 20]} />
+          {/* +X, -X */}
+          <meshStandardMaterial attach="material-0" map={wall} side={THREE.BackSide} />
+          <meshStandardMaterial attach="material-1" map={wall} side={THREE.BackSide} />
+          {/* +Y = sufit, -Y = podłoga */}
+          <meshStandardMaterial attach="material-2" map={ceiling} side={THREE.BackSide} />
+          <meshStandardMaterial attach="material-3" map={floor} side={THREE.BackSide} />
+          {/* +Z, -Z */}
+          <meshStandardMaterial attach="material-4" map={wall} side={THREE.BackSide} />
+          <meshStandardMaterial attach="material-5" map={wall} side={THREE.BackSide} />
+        </mesh>
       </mesh>
     );
   };
