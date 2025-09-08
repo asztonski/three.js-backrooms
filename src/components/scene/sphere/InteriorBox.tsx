@@ -1,7 +1,11 @@
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
-export const InteriorBox = () => {
+type InteriorBoxProps = {
+  size?: [number, number, number];
+};
+
+export const InteriorBox = ({ size = [40, 20, 20] }: InteriorBoxProps) => {
   const { wall, floor, ceiling } = useTexture({
     wall: '/textures/wallpaper.jpg',
     floor: '/textures/floor.png',
@@ -12,14 +16,14 @@ export const InteriorBox = () => {
     t.colorSpace = THREE.SRGBColorSpace;
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
   });
-  wall.repeat.set(10, 10);
-  floor.repeat.set(1, 1); // gęstszy deseń na podłodze
-  ceiling.repeat.set(1, 1); // zwykle rzadszy na suficie
+  wall.repeat.set(20, 20);
+  floor.repeat.set(10, 10); // gęstszy deseń na podłodze
+  ceiling.repeat.set(2, 1); // zwykle rzadszy na suficie
 
   return (
     <mesh>
       <mesh>
-        <boxGeometry args={[40, 20, 20]} />
+        <boxGeometry args={size} />
         {/* +X, -X */}
         <meshStandardMaterial attach="material-0" map={wall} side={THREE.BackSide} />
         <meshStandardMaterial attach="material-1" map={wall} side={THREE.BackSide} />

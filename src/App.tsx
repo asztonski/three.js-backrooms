@@ -4,6 +4,7 @@ import { PositionalAudio, PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
 import { RectAreaLightTexturesLib } from 'three/examples/jsm/lights/RectAreaLightTexturesLib.js';
 import { CeilingTroffer } from './components/scene/light/CeilingTroffer';
+import { CeilingLamp } from './components/scene/light/CeilingLamp';
 import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import * as THREE from 'three';
 
@@ -45,7 +46,7 @@ export default function App() {
 
       const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
 
-      const speed = 3; // meters per second
+      const speed = 9; // meters per second
       const move = new THREE.Vector3();
       if (keys.current.w) move.add(forward);
       if (keys.current.s) move.sub(forward);
@@ -90,16 +91,19 @@ export default function App() {
     return (
       <>
         <CeilingTroffer />
-        <PositionalAudio
+        <CeilingLamp size={[5, 5]} position={[0, 9.9, 0]} />
+        <CeilingLamp size={[5, 5]} position={[-20, 9.9, 0]} />
+        <CeilingLamp size={[5, 5]} position={[20, 9.9, 0]} />
+        {/* <PositionalAudio
           ref={audioRef}
           url="/audio/ambient.wav"
           autoplay
           loop
           distance={4}
           position={[0, 1.6, 0]}
-        />
+        /> */}
         <Suspense fallback={null}>
-          <InteriorBox />
+          <InteriorBox size={[100, 20, 40]} />
         </Suspense>
         <PointerLockControls ref={plcRef} />
       </>

@@ -9,10 +9,10 @@ type CeilingTrofferProps = {
 };
 
 export const CeilingTroffer = ({
-  position = [0, 9.7, 0],
+  position = [0, 5, 0],
   size = [3, 1.2],
   color = '#fffdf3',
-  intensity = 8,
+  intensity = 12,
 }: CeilingTrofferProps) => {
   useEffect(() => {
     RectAreaLightUniformsLib.init();
@@ -20,7 +20,7 @@ export const CeilingTroffer = ({
 
   return (
     <>
-      <ambientLight intensity={0.15} />
+      <ambientLight intensity={0.5} />
       <group position={position} rotation={[-Math.PI / 2, 0, 0]}>
         <rectAreaLight args={[color, intensity, size[0], size[1]]} />
         <mesh position={[0, 0.01, 0]}>
