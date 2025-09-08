@@ -1,47 +1,16 @@
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef, Suspense, useEffect } from 'react';
-import { useTexture, PositionalAudio, PointerLockControls } from '@react-three/drei';
+import { PositionalAudio, PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
+import { RectAreaLightTexturesLib } from 'three/examples/jsm/lights/RectAreaLightTexturesLib.js';
+import { CeilingTroffer } from './components/scene/light/CeilingTroffer';
+import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import * as THREE from 'three';
 
 export default function App() {
-  const InteriorBox = () => {
-    const { wall, floor, ceiling } = useTexture({
-      wall: '/textures/wallpaper.jpg',
-      floor: '/textures/floor.png',
-      ceiling: '/textures/ceiling.png',
-    });
-
-    [wall, floor, ceiling].forEach((t) => {
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    });
-    wall.repeat.set(2, 2);
-    floor.repeat.set(4, 4); // gęstszy deseń na podłodze
-    ceiling.repeat.set(1, 1); // zwykle rzadszy na suficie
-
-    return (
-      <mesh>
-        <mesh>
-          <boxGeometry args={[40, 20, 20]} />
-          {/* +X, -X */}
-          <meshStandardMaterial attach="material-0" map={wall} side={THREE.BackSide} />
-          <meshStandardMaterial attach="material-1" map={wall} side={THREE.BackSide} />
-          {/* +Y = sufit, -Y = podłoga */}
-          <meshStandardMaterial attach="material-2" map={ceiling} side={THREE.BackSide} />
-          <meshStandardMaterial attach="material-3" map={floor} side={THREE.BackSide} />
-          {/* +Z, -Z */}
-          <meshStandardMaterial attach="material-4" map={wall} side={THREE.BackSide} />
-          <meshStandardMaterial attach="material-5" map={wall} side={THREE.BackSide} />
-        </mesh>
-      </mesh>
-    );
-  };
-
   const plcRef = useRef<any>(null);
 
   const Scene = ({ plcRef }) => {
-    const camera = useThree((state) => state.camera);
     const ROOM_HALF = 10; // bo box ma 20
     const RADIUS = 0.75; // „promień gracza”
 
@@ -62,6 +31,10 @@ export default function App() {
         window.removeEventListener('keydown', down);
         window.removeEventListener('keyup', up);
       };
+    }, []);
+
+    useEffect(() => {
+      RectAreaLightTexturesLib.init();
     }, []);
 
     useFrame(({ camera }, dt) => {
@@ -116,8 +89,7 @@ export default function App() {
 
     return (
       <>
-        {/* <directionalLight position={[0, 0, 2]} ref={directionalLightRef} /> */}
-        <ambientLight />
+        <CeilingTroffer />
         <PositionalAudio
           ref={audioRef}
           url="/audio/ambient.wav"
