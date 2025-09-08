@@ -9,10 +9,14 @@ import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import * as THREE from 'three';
 
 export default function App() {
+  const ROOM_WIDTH = 100;
+  const ROOM_DEPTH = 80;
+  const ROOM_HEIGHT = 20;
+  const ROOM: [number, number, number] = [ROOM_WIDTH, ROOM_HEIGHT, ROOM_DEPTH];
+
   const plcRef = useRef<any>(null);
 
   const Scene = ({ plcRef }) => {
-    const ROOM_HALF = 10; // bo box ma 20
     const RADIUS = 0.75; // „promień gracza”
 
     const keys = useRef({ w: false, a: false, s: false, d: false });
@@ -58,10 +62,13 @@ export default function App() {
         camera.position.add(move);
       }
 
-      const p = camera.position;
-      p.x = THREE.MathUtils.clamp(p.x, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
-      p.y = THREE.MathUtils.clamp(p.y, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
-      p.z = THREE.MathUtils.clamp(p.z, -ROOM_HALF + RADIUS, ROOM_HALF - RADIUS);
+      const position = camera.position;
+      const halfX = ROOM[0] / 2;
+      const halfY = ROOM[1] / 2;
+      const halfZ = ROOM[2] / 2;
+      position.x = THREE.MathUtils.clamp(position.x, -halfX + RADIUS, halfX - RADIUS);
+      position.y = THREE.MathUtils.clamp(position.y, -halfY + RADIUS, halfY - RADIUS);
+      position.z = THREE.MathUtils.clamp(position.z, -halfZ + RADIUS, halfZ - RADIUS);
     });
 
     const directionalLightRef = useRef<THREE.DirectionalLight>(
@@ -88,6 +95,14 @@ export default function App() {
       window.addEventListener('wheel', unlock, { once: true, passive: true });
     }, []);
 
+    const segments = [
+      // 90° straight walls
+      { from: [-40, -20], to: [40, -20] }, // horizontal
+      { from: [40, -20], to: [40, 20] }, // vertical
+      // 45° diagonal
+      { from: [-10, 0], to: [10, 20], thickness: 0.5, tile: 0.5 },
+    ];
+
     return (
       <>
         <CeilingTroffer />
@@ -103,7 +118,7 @@ export default function App() {
           position={[0, 1.6, 0]}
         /> */}
         <Suspense fallback={null}>
-          <InteriorBox size={[100, 20, 80]} />
+          <InteriorBox size={ROOM} segments={segments} />
         </Suspense>
         <PointerLockControls ref={plcRef} />
       </>

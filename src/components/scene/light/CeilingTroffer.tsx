@@ -11,8 +11,8 @@ type CeilingTrofferProps = {
 export const CeilingTroffer = ({
   position = [0, 5, 0],
   size = [3, 1.2],
-  color = '#fffdf3',
-  intensity = 12,
+  color = '#eee7c7',
+  intensity = 0.1,
 }: CeilingTrofferProps) => {
   useEffect(() => {
     RectAreaLightUniformsLib.init();
