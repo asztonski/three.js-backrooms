@@ -5,6 +5,7 @@ import { useHelper } from '@react-three/drei';
 import { LightingInit } from './helpers/lighting';
 import { CeilingLamp } from './components/scene/light/CeilingLamp';
 import { InteriorBox } from './components/scene/sphere/InteriorBox';
+import { computeLampGridPositions } from './helpers/grid';
 import * as THREE from 'three';
 
 export default function App() {
@@ -13,29 +14,10 @@ export default function App() {
   const ROOM_Y = 20; // Height
   const ROOM: [number, number, number] = [ROOM_X, ROOM_Y, ROOM_Z];
 
-  const LAMPS_COUNT = Math.max(1, Math.round((ROOM_X * (ROOM_Z + ROOM_X * 4)) / 6500));
-  const aspect = ROOM_X / ROOM_Z;
-  const cols = Math.max(1, Math.round(Math.sqrt(LAMPS_COUNT * aspect)));
-  const rows = Math.max(1, Math.ceil(LAMPS_COUNT / cols));
-
   const padX = 3; // ~ sizeX/2 + clearance
   const padZ = 3;
 
-  const innerX = ROOM_X - 2 * padX;
-  const innerZ = ROOM_Z - 2 * padZ;
-
-  const stepX = innerX / cols;
-  const stepZ = innerZ / rows;
-
-  const LAMPS_POSITIONS: [number, number, number][] = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (LAMPS_POSITIONS.length === LAMPS_COUNT) break;
-      const x = -ROOM_X / 2 + padX + stepX * (c + 0.5);
-      const z = -ROOM_Z / 2 + padZ + stepZ * (r + 0.5);
-      LAMPS_POSITIONS.push([x, 9.9, z]);
-    }
-  }
+  const LAMPS_POSITIONS = computeLampGridPositions(ROOM_X, ROOM_Z, padX, padZ, 9.9);
 
   const LAMPS_INSTANCES = LAMPS_POSITIONS.map((pos, i) => (
     <CeilingLamp key={i} size={[5, 5]} position={pos} />
