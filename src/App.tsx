@@ -6,6 +6,7 @@ import { LightingInit } from './helpers/lighting';
 import { CeilingLamp } from './components/scene/light/CeilingLamp';
 import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import { computeLampGridPositions } from './helpers/grid';
+import { useWASD } from './helpers/input';
 import * as THREE from 'three';
 
 export default function App() {
@@ -28,24 +29,7 @@ export default function App() {
   const Scene = ({ plcRef }) => {
     const RADIUS = 0.75; // „promień gracza”
 
-    const keys = useRef({ w: false, a: false, s: false, d: false });
-
-    useEffect(() => {
-      const down = (e: KeyboardEvent) => {
-        const k = e.key.toLowerCase();
-        if (k in keys.current) keys.current[k as 'w' | 'a' | 's' | 'd'] = true;
-      };
-      const up = (e: KeyboardEvent) => {
-        const k = e.key.toLowerCase();
-        if (k in keys.current) keys.current[k as 'w' | 'a' | 's' | 'd'] = false;
-      };
-      window.addEventListener('keydown', down);
-      window.addEventListener('keyup', up);
-      return () => {
-        window.removeEventListener('keydown', down);
-        window.removeEventListener('keyup', up);
-      };
-    }, []);
+    const keys = useWASD();
 
     useFrame(({ camera }, dt) => {
       const forward = new THREE.Vector3();
