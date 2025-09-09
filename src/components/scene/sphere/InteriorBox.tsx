@@ -19,7 +19,7 @@ export function InteriorBox({ size = [100, 20, 80], segments = [] }: InteriorBox
   const [W, H, D] = size;
 
   const { wall, floor, ceiling } = useTexture({
-    wall: '/textures/wallpaper.jpg',
+    wall: '/textures/wallpaper.png',
     floor: '/textures/floor.png',
     ceiling: '/textures/ceiling.png',
   });
