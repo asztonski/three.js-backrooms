@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef, Suspense, useEffect } from 'react';
-import { PositionalAudio, PointerLockControls } from '@react-three/drei';
+import { PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
 import { RectAreaLightTexturesLib } from 'three/examples/jsm/lights/RectAreaLightTexturesLib.js';
 import { CeilingLamp } from './components/scene/light/CeilingLamp';
@@ -104,24 +104,6 @@ export default function App() {
 
     useHelper(directionalLightRef, THREE.DirectionalLightHelper, 1, 'red');
 
-    const audioRef = useRef<THREE.PositionalAudio>(null);
-
-    useEffect(() => {
-      const unlock = () => {
-        const ctx = THREE.AudioContext.getContext();
-        if (ctx.state === 'suspended') ctx.resume();
-        audioRef.current?.play?.();
-        window.removeEventListener('pointerdown', unlock);
-        window.removeEventListener('touchstart', unlock);
-        window.removeEventListener('keydown', unlock);
-        window.removeEventListener('wheel', unlock);
-      };
-      window.addEventListener('pointerdown', unlock, { once: true });
-      window.addEventListener('touchstart', unlock, { once: true, passive: true });
-      window.addEventListener('keydown', unlock, { once: true });
-      window.addEventListener('wheel', unlock, { once: true, passive: true });
-    }, []);
-
     const segments = [
       // 90° straight walls
       { from: [-40, -20], to: [40, -20] }, // horizontal
@@ -133,14 +115,6 @@ export default function App() {
     return (
       <>
         {LAMPS_INSTANCES}
-        {/* <PositionalAudio
-          ref={audioRef}
-          url="/audio/ambient.wav"
-          autoplay
-          loop
-          distance={4}
-          position={[0, 1.6, 0]}
-        /> */}
         <ambientLight color={0xfaf0a7} intensity={0.3} />
         <Suspense fallback={null}>
           <InteriorBox size={ROOM} segments={segments} />

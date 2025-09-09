@@ -1,5 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import { PositionalAudio } from '@react-three/drei';
+import * as THREE from 'three';
 
 type CeilingLampProps = {
   position?: [number, number, number];
@@ -20,6 +22,24 @@ export const CeilingLamp = ({
     RectAreaLightUniformsLib.init();
   }, []);
 
+  const audioRef = useRef<THREE.PositionalAudio>(null);
+
+  useEffect(() => {
+    const unlock = () => {
+      const ctx = THREE.AudioContext.getContext();
+      if (ctx.state === 'suspended') ctx.resume();
+      audioRef.current?.play?.();
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('keydown', unlock);
+      window.removeEventListener('wheel', unlock);
+    };
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('touchstart', unlock, { once: true, passive: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    window.addEventListener('wheel', unlock, { once: true, passive: true });
+  }, []);
+
   return (
     <group position={position}>
       {/* Shadow-casting / actual reach */}
@@ -33,6 +53,14 @@ export const CeilingLamp = ({
         shadow-mapSize={[1024, 1024]}
         shadow-bias={-0.0002}
         shadow-radius={2}
+      />
+      <PositionalAudio
+        ref={audioRef}
+        url="/audio/ambient.wav"
+        autoplay
+        loop
+        distance={4}
+        position={[0, 1.6, 0]}
       />
 
       {/* Aim the panel + rect area light downward */}
