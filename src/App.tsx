@@ -1,9 +1,8 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, Suspense, useEffect, use } from 'react';
+import { useRef, Suspense, useEffect } from 'react';
 import { PositionalAudio, PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
 import { RectAreaLightTexturesLib } from 'three/examples/jsm/lights/RectAreaLightTexturesLib.js';
-import { CeilingTroffer } from './components/scene/light/CeilingTroffer';
 import { CeilingLamp } from './components/scene/light/CeilingLamp';
 import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import * as THREE from 'three';
@@ -14,7 +13,7 @@ export default function App() {
   const ROOM_Y = 20; // Height
   const ROOM: [number, number, number] = [ROOM_X, ROOM_Y, ROOM_Z];
 
-  const LAMPS_COUNT = Math.max(1, Math.round((ROOM_X * (ROOM_Z + ROOM_X * 4)) / 5000));
+  const LAMPS_COUNT = Math.max(1, Math.round((ROOM_X * (ROOM_Z + ROOM_X * 4)) / 6500));
   const aspect = ROOM_X / ROOM_Z;
   const cols = Math.max(1, Math.round(Math.sqrt(LAMPS_COUNT * aspect)));
   const rows = Math.max(1, Math.ceil(LAMPS_COUNT / cols));
@@ -133,7 +132,6 @@ export default function App() {
 
     return (
       <>
-        <CeilingTroffer />
         {LAMPS_INSTANCES}
         {/* <PositionalAudio
           ref={audioRef}
@@ -143,6 +141,7 @@ export default function App() {
           distance={4}
           position={[0, 1.6, 0]}
         /> */}
+        <ambientLight color={0xfaf0a7} intensity={0.3} />
         <Suspense fallback={null}>
           <InteriorBox size={ROOM} segments={segments} />
         </Suspense>
@@ -152,7 +151,7 @@ export default function App() {
   };
 
   return (
-    <Canvas onClick={() => plcRef.current?.lock?.()}>
+    <Canvas shadows onClick={() => plcRef.current?.lock?.()}>
       <Scene plcRef={plcRef} />
     </Canvas>
   );
