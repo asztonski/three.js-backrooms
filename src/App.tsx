@@ -115,7 +115,7 @@ export default function App() {
     return (
       <>
         {LAMPS_INSTANCES}
-        <ambientLight color={0xfaf0a7} intensity={0.3} />
+        <ambientLight color={0xfaf0a7} intensity={0.5} />
         <Suspense fallback={null}>
           <InteriorBox size={ROOM} segments={segments} />
         </Suspense>
