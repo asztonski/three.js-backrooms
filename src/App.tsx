@@ -2,7 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useRef, Suspense, useEffect } from 'react';
 import { PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
-import { RectAreaLightTexturesLib } from 'three/examples/jsm/lights/RectAreaLightTexturesLib.js';
+import { LightingInit } from './helpers/lighting';
 import { CeilingLamp } from './components/scene/light/CeilingLamp';
 import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import * as THREE from 'three';
@@ -65,10 +65,6 @@ export default function App() {
       };
     }, []);
 
-    useEffect(() => {
-      RectAreaLightTexturesLib.init();
-    }, []);
-
     useFrame(({ camera }, dt) => {
       const forward = new THREE.Vector3();
       camera.getWorldDirection(forward);
@@ -115,6 +111,7 @@ export default function App() {
     return (
       <>
         {LAMPS_INSTANCES}
+        <LightingInit />
         <ambientLight color={0xfaf0a7} intensity={0.5} />
         <Suspense fallback={null}>
           <InteriorBox size={ROOM} segments={segments} />
