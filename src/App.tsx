@@ -7,6 +7,7 @@ import { CeilingLamp } from './components/scene/light/CeilingLamp';
 import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import { computeLampGridPositions } from './helpers/grid';
 import { useWASD } from './helpers/input';
+import { stepCameraWASD, clampCameraToRoom } from './helpers/movement';
 import * as THREE from 'three';
 
 export default function App() {
@@ -32,32 +33,10 @@ export default function App() {
     const keys = useWASD();
 
     useFrame(({ camera }, dt) => {
-      const forward = new THREE.Vector3();
-      camera.getWorldDirection(forward);
-      forward.y = 0;
-      forward.normalize();
-
-      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).negate();
-
-      const speed = 9; // meters per second
-      const move = new THREE.Vector3();
-      if (keys.current.w) move.add(forward);
-      if (keys.current.s) move.sub(forward);
-      if (keys.current.a) move.add(right);
-      if (keys.current.d) move.sub(right);
-
-      if (move.lengthSq() > 0) {
-        move.normalize().multiplyScalar(speed * dt);
-        camera.position.add(move);
-      }
-
-      const position = camera.position;
-      const halfX = ROOM[0] / 2;
-      const halfY = ROOM[1] / 2;
-      const halfZ = ROOM[2] / 2;
-      position.x = THREE.MathUtils.clamp(position.x, -halfX + RADIUS, halfX - RADIUS);
-      position.y = THREE.MathUtils.clamp(position.y, -halfY + RADIUS, halfY - RADIUS);
-      position.z = THREE.MathUtils.clamp(position.z, -halfZ + RADIUS, halfZ - RADIUS);
+      // krok ruchu WASD
+      stepCameraWASD(camera, dt, keys, 9);
+      // ograniczenie do rozmiaru pokoju
+      clampCameraToRoom(camera as THREE.PerspectiveCamera, ROOM, RADIUS);
     });
 
     const directionalLightRef = useRef<THREE.DirectionalLight>(
