@@ -32,7 +32,7 @@ export function InteriorBox({ size = [100, 20, 80], segments = [] }: InteriorBox
 
   // Floor/ceiling tiling
   wall.repeat.set(20, 20);
-  floor.repeat.set(10, 10);
+  floor.repeat.set(2, 2);
   ceiling.repeat.set(5, 5);
 
   return (

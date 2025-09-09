@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, Suspense, useEffect } from 'react';
+import { useRef, Suspense, useEffect, use } from 'react';
 import { PositionalAudio, PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
 import { RectAreaLightTexturesLib } from 'three/examples/jsm/lights/RectAreaLightTexturesLib.js';
@@ -9,10 +9,38 @@ import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import * as THREE from 'three';
 
 export default function App() {
-  const ROOM_WIDTH = 100;
-  const ROOM_DEPTH = 80;
-  const ROOM_HEIGHT = 20;
-  const ROOM: [number, number, number] = [ROOM_WIDTH, ROOM_HEIGHT, ROOM_DEPTH];
+  const ROOM_X = 100;
+  const ROOM_Z = 80;
+  const ROOM_Y = 20; // Height
+  const ROOM: [number, number, number] = [ROOM_X, ROOM_Y, ROOM_Z];
+
+  const LAMPS_COUNT = Math.max(1, Math.round((ROOM_X * (ROOM_Z + ROOM_X * 4)) / 5000));
+  const aspect = ROOM_X / ROOM_Z;
+  const cols = Math.max(1, Math.round(Math.sqrt(LAMPS_COUNT * aspect)));
+  const rows = Math.max(1, Math.ceil(LAMPS_COUNT / cols));
+
+  const padX = 3; // ~ sizeX/2 + clearance
+  const padZ = 3;
+
+  const innerX = ROOM_X - 2 * padX;
+  const innerZ = ROOM_Z - 2 * padZ;
+
+  const stepX = innerX / cols;
+  const stepZ = innerZ / rows;
+
+  const LAMPS_POSITIONS: [number, number, number][] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (LAMPS_POSITIONS.length === LAMPS_COUNT) break;
+      const x = -ROOM_X / 2 + padX + stepX * (c + 0.5);
+      const z = -ROOM_Z / 2 + padZ + stepZ * (r + 0.5);
+      LAMPS_POSITIONS.push([x, 9.9, z]);
+    }
+  }
+
+  const LAMPS_INSTANCES = LAMPS_POSITIONS.map((pos, i) => (
+    <CeilingLamp key={i} size={[5, 5]} position={pos} />
+  ));
 
   const plcRef = useRef<any>(null);
 
@@ -106,9 +134,7 @@ export default function App() {
     return (
       <>
         <CeilingTroffer />
-        <CeilingLamp size={[5, 5]} position={[0, 9.9, 10]} />
-        <CeilingLamp size={[5, 5]} position={[-20, 9.9, 0]} />
-        <CeilingLamp size={[5, 5]} position={[20, 9.9, -10]} />
+        {LAMPS_INSTANCES}
         {/* <PositionalAudio
           ref={audioRef}
           url="/audio/ambient.wav"
