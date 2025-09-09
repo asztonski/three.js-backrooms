@@ -20,7 +20,7 @@ export function InteriorBox({ size = [100, 20, 80], segments = [] }: InteriorBox
 
   const { wall, floor, ceiling } = useTexture({
     wall: '/textures/wallpaper.png',
-    floor: '/textures/floor.png',
+    floor: '/textures/floor.jpg',
     ceiling: '/textures/ceiling.png',
   });
 
@@ -32,7 +32,7 @@ export function InteriorBox({ size = [100, 20, 80], segments = [] }: InteriorBox
 
   // Floor/ceiling tiling
   wall.repeat.set(20, 20);
-  floor.repeat.set(2, 2);
+  floor.repeat.set(10, 10);
   ceiling.repeat.set(5, 5);
 
   return (
