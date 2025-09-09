@@ -1,0 +1,17 @@
+{
+  "room": { "size": [100, 20, 80] },
+  "player": { "radius": 0.75, "speed": 9 },
+  "lamps": {
+    "size": [5, 5],
+    "padding": [3, 3],
+    "spacing": [12, 12],
+    "color": "#fffdf5",
+    "emissiveIntensity": 3,
+    "point": { "power": 1800, "distance": 20, "decay": 2, "castShadow": false }
+  },
+  "segments": [
+    { "from": [-40, -20], "to": [40, -20] },
+    { "from": [40, -20], "to": [40, 20] },
+    { "from": [-10, 0], "to": [10, 20], "thickness": 0.5, "tile": 0.5 }
+  ]
+}
