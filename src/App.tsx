@@ -8,6 +8,7 @@ import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import { computeLampGridPositions } from './helpers/grid';
 import { useWASD } from './helpers/input';
 import { stepCameraWASD, clampCameraToRoom } from './helpers/movement';
+import { resolveCollisions2D } from './helpers/collision';
 import scene from './config/scene.json';
 import * as THREE from 'three';
 
@@ -28,12 +29,14 @@ export default function App() {
 
   const Scene = ({ plcRef }) => {
     const RADIUS = 0.75; // „promień gracza”
-
+    const segments = scene.segments as any;
     const keys = useWASD();
 
     useFrame(({ camera }, dt) => {
       // krok ruchu WASD
       stepCameraWASD(camera, dt, keys, 9);
+      // kolizje z wewnętrznymi ścianami (XZ)
+      resolveCollisions2D((camera as THREE.PerspectiveCamera).position, segments, RADIUS);
       // ograniczenie do rozmiaru pokoju
       clampCameraToRoom(camera as THREE.PerspectiveCamera, ROOM, RADIUS);
     });
@@ -43,14 +46,6 @@ export default function App() {
     ) as React.RefObject<THREE.DirectionalLight>;
 
     useHelper(directionalLightRef, THREE.DirectionalLightHelper, 1, 'red');
-
-    const segments = [
-      // 90° straight walls
-      { from: [-40, -20], to: [40, -20] }, // horizontal
-      { from: [40, -20], to: [40, 20] }, // vertical
-      // 45° diagonal
-      { from: [-10, 0], to: [10, 20], thickness: 0.5, tile: 0.5 },
-    ];
 
     return (
       <>
