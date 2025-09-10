@@ -31,6 +31,7 @@ export function resolveCollisions2D(
   segments: Segment[],
   cameraRadius: number,
   iterations = 3,
+  margin = 0.08, // ~8 cm bufora, możesz potem zmniejszyć do 0.03–0.05
 ) {
   for (let k = 0; k < iterations; k++) {
     let any = false;
@@ -42,7 +43,7 @@ export function resolveCollisions2D(
         bz = s.to[1];
 
       const segR = (s.thickness ?? 0.5) * 0.5;
-      const R = cameraRadius + segR;
+      const R = cameraRadius + segR + margin;
 
       const cp = closestPointOnSegment2D(ax, az, bx, bz, pos.x, pos.z);
       let dx = pos.x - cp.x;

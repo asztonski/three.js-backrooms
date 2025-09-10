@@ -5,7 +5,6 @@ export function computeLampGridPositions(
   padZ: number,
   //   spacingX: number,
   //   spacingZ: number,
-  y = 9.9,
 ): [number, number, number][] {
   const innerX = roomX - 2 * padX;
   const innerZ = roomZ - 2 * padZ;
@@ -23,6 +22,7 @@ export function computeLampGridPositions(
     for (let c = 0; c < cols; c++) {
       if (positions.length === LAMPS_COUNT) break;
       const x = -innerX / 2 + padX + stepX * (c + 0.5);
+      const y = 9.9; // room height
       const z = -innerZ / 2 + padZ + stepZ * (r + 0.5);
       positions.push([x, y, z]);
     }

@@ -36,7 +36,7 @@ export default function App() {
       // krok ruchu WASD
       stepCameraWASD(camera, dt, keys, 9);
       // kolizje z wewnętrznymi ścianami (XZ)
-      resolveCollisions2D((camera as THREE.PerspectiveCamera).position, segments, RADIUS);
+      resolveCollisions2D((camera as THREE.PerspectiveCamera).position, segments, RADIUS, 5, 0.15);
       // ograniczenie do rozmiaru pokoju
       clampCameraToRoom(camera as THREE.PerspectiveCamera, ROOM, RADIUS);
     });
