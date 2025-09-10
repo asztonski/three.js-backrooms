@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useRef, Suspense, useEffect } from 'react';
+import { useRef, Suspense } from 'react';
 import { PointerLockControls } from '@react-three/drei';
 import { useHelper } from '@react-three/drei';
 import { LightingInit } from './helpers/lighting';
@@ -8,18 +8,17 @@ import { InteriorBox } from './components/scene/sphere/InteriorBox';
 import { computeLampGridPositions } from './helpers/grid';
 import { useWASD } from './helpers/input';
 import { stepCameraWASD, clampCameraToRoom } from './helpers/movement';
+import scene from './config/scene.json';
 import * as THREE from 'three';
 
 export default function App() {
-  const ROOM_X = 100;
-  const ROOM_Z = 80;
-  const ROOM_Y = 20; // Height
-  const ROOM: [number, number, number] = [ROOM_X, ROOM_Y, ROOM_Z];
+  const ROOM = scene.room.size as [number, number, number];
+  const [ROOM_X, ROOM_Y, ROOM_Z] = ROOM;
 
   const padX = 3; // ~ sizeX/2 + clearance
   const padZ = 3;
 
-  const LAMPS_POSITIONS = computeLampGridPositions(ROOM_X, ROOM_Z, padX, padZ, 9.9);
+  const LAMPS_POSITIONS = computeLampGridPositions(ROOM_X, ROOM_Z, padX, padZ, ROOM_Y);
 
   const LAMPS_INSTANCES = LAMPS_POSITIONS.map((pos, i) => (
     <CeilingLamp key={i} size={[5, 5]} position={pos} />
